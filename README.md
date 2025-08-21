@@ -25,7 +25,7 @@ O objetivo foi treinar conceitos de manipulação do DOM, arrays, eventos e pagi
 
 Ou veja um preview rápido em ação:  
 
-![Preview do projeto](./demo.gif)  
+![Preview do projeto](./Demo.gif)  
 
 ---
 
