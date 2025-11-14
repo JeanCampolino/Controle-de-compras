@@ -30,7 +30,7 @@ O projeto combina organização de compras com um toque de inteligência artific
 O recurso de IA de Bolso simula um sistema inteligente de reposição de estoque doméstico. A cada compra finalizada, o histórico é salvo. O algoritmo verifica este histórico e sugere os itens que foram comprados mais de uma vez, mas que não estão na lista atual, facilitando a lembrança e garantindo que itens essenciais não sejam esquecidos.
 
 ## Demonstração
- Acesse o projeto online: (Insira o link aqui)
+ Acesse o projeto online: ( https://jeancampolino.github.io/Controle-de-compras/ )
 
 Ou veja um preview rápido em ação: (Insira o link do vídeo aqui)
 
