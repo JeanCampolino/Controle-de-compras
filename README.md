@@ -1,63 +1,47 @@
-# 🛒 Carrinho de Compras  
+🛒 Carrinho de Compras
+Um projeto simples e funcional de lista de compras interativa, desenvolvido em HTML, CSS (Bootstrap) e JavaScript.
 
-Um projeto simples e funcional de *lista de compras interativa, desenvolvido em **HTML, CSS (Bootstrap)* e *JavaScript*.  
+O objetivo foi treinar conceitos de manipulação do DOM, arrays, eventos e paginação, resultando em uma aplicação intuitiva e prática.
 
-O objetivo foi treinar conceitos de manipulação do DOM, arrays, eventos e paginação, resultando em uma aplicação intuitiva e prática.  
-
----
-
-## 🚀 Funcionalidades
-Adicione esta funcionalidade no topo para dar o máximo de destaque:
+🚀 Funcionalidades
+O projeto combina organização de compras com um toque de inteligência artificial.
 
 ✔ Inteligência Artificial (IA de Bolso): Implementação de um Algoritmo de Sugestão de Itens Frequentes que analisa o histórico de compras (localStorage) e sugere os produtos mais prováveis de recompra com um clique.
 
-A lista completa de Funcionalidades atualizada ficaria assim:
+✔ Lista de Planejamento: Função de lista separada com persistência (localStorage), permitindo montar a lista de compras antes de adicioná-los ao carrinho.
 
-✔ Inteligência Artificial (IA de Bolso): Implementação de um Algoritmo de Sugestão de Itens Frequentes que analisa o histórico de compras (localStorage) e sugere os produtos mais prováveis de recompra com um clique.
+✔ Adicionar produtos com nome, quantidade e preço.
 
-✔ Adicionar produtos com nome, quantidade e preço
+✔ Aceita preços com vírgula (ex: 9,98).
 
-✔ Aceita preços com vírgula (ex: 9,98)
+✔ Edição em tempo real da quantidade e preço diretamente na tabela.
 
-✔ Edição em tempo real da quantidade diretamente na tabela
+✔ Cálculo automático do subtotal.
 
-✔ Cálculo automático do subtotal
+✔ Remover itens individualmente.
 
-✔ Remover itens individualmente
+✔ Paginação automática (10 itens por página) sem recarregar a página.
 
-✔ Paginação automática (10 itens por página) sem recarregar a página
+✔ Layout responsivo com Bootstrap, otimizado para uso em smartphones.
 
-✔ Layout responsivo com Bootstrap
+✔ Fundo com gradiente estilizado, em tons de verde e azul (Dark Mode), para dar um toque moderno.
 
-✔ Fundo com gradiente estilizado para dar um toque moderno
+🧠 Inteligência Artificial (IA de Bolso)
+O recurso de IA de Bolso simula um sistema inteligente de reposição de estoque doméstico. A cada compra finalizada, o histórico é salvo. O algoritmo verifica este histórico e sugere os itens que foram comprados mais de uma vez, mas que não estão na lista atual, facilitando a lembrança e garantindo que itens essenciais não sejam esquecidos.
 
----
+🖼 Demonstração
+👉 Acesse o projeto online: (Insira o link aqui)
 
-## 🧠 Inteligência Artificial (IA de Bolso)
-Inclua esta nova seção para explicar o conceito por trás do recurso:
+Ou veja um preview rápido em ação: (Insira o link do vídeo aqui)
 
-## de reposição de estoque doméstico.
+🛠 Tecnologias utilizadas
+HTML5
 
-## 🖼 Demonstração  
+CSS3 (Bootstrap 5.3)
 
-👉 [Acesse o projeto online](https://jeancampolino.github.io/Controle-de-compras/)  
+JavaScript (ES6+)
 
-Ou veja um preview rápido em ação:  
+📦 Como usar
+Clone o repositório:
 
-![Preview do projeto](./Demo.gif)  
-
----
-
-## 🛠 Tecnologias utilizadas  
-
-- *HTML5*  
-- *CSS3* (Bootstrap 5.3)  
-- *JavaScript (ES6+)*  
-
----
-
-## 📦 Como usar  
-
-1. Clone o repositório:  
-   ```bash
-   git clone https://github.com/seuusuario/Controle-de-compras.git
+git clone https://github.com/seuusuario/Controle-de-compras.git
