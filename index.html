@@ -24,10 +24,10 @@
         /* CARD PRINCIPAL (Fundo escuro para contraste com o gradiente) */
         .card-view {
             background-color: rgba(109, 122, 134, 0.95); /* Cinza escuro semi-transparente */
-            border: 1px solid #495057;
+            border: 1px solid #bccbdb;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 8px rgba(175, 204, 230, 0.6);
         }
 
         /* CABEÇALHOS E TEXTO DE DESTAQUE */
@@ -37,7 +37,7 @@
 
         /* INPUTS */
         .form-control, .input-group-text, .list-group-item {
-            background-color: #495057;
+            background-color: #afbecd;
             color: #f8f9fa;
             border-color: #6c757d;
         }
@@ -53,7 +53,7 @@
             background-color: #d2e0f5 !important;
         }
         .table-striped > tbody > tr:nth-of-type(even) > * {
-            background-color: #51575c !important;
+            background-color: #b2cde2 !important;
         }
     </style>
 </head>
@@ -241,17 +241,17 @@
                     
                     <td>
                         <input type="text" 
-                               class="form-control form-control-sm editar-valor" 
-                               data-index="${inicio + index}" 
-                               value="${item.valor.toFixed(2).replace('.', ',')}">
+                                class="form-control form-control-sm editar-valor" 
+                                data-index="${inicio + index}" 
+                                value="${item.valor.toFixed(2).replace('.', ',')}">
                     </td>
 
                     <td>
                         <input type="number" 
-                               value="${item.quantidade}" 
-                               min="1" 
-                               class="form-control form-control-sm editar-quantidade" 
-                               data-index="${inicio + index}" />
+                                value="${item.quantidade}" 
+                                min="1" 
+                                class="form-control form-control-sm editar-quantidade" 
+                                data-index="${inicio + index}" />
                     </td>
                     
                     <td>R$ ${(item.valor * item.quantidade).toFixed(2).replace('.', ',')}</td>
@@ -367,21 +367,51 @@
                 listaSugestoes.appendChild(botao);
             });
         }
+        
+        // NOVO CÓDIGO: Função auxiliar para atualizar APENAS o total de uma linha
+        function atualizarTotalLinha(inputElement, item) {
+            // Encontra a linha (<tr>)
+            const row = inputElement.closest('tr');
+            if (!row) return;
+
+            // Encontra a célula do 'Total' (que é a 4ª célula, índice 3)
+            const totalCell = row.children[3]; 
+
+            // Calcula o novo total e atualiza a célula
+            const novoTotal = (item.valor * item.quantidade).toFixed(2).replace('.', ',');
+            totalCell.textContent = `R$ ${novoTotal}`;
+        }
 
 
+        // BLOCO CORRIGIDO: ONDE O ERRO ESTAVA
         document.addEventListener("input", (event) => {
-            if (event.target.classList.contains("editar-quantidade")) {
-                let index = event.target.getAttribute("data-index");
-                listaItens[index].quantidade = parseInt(event.target.value);
-                atualizarTabela();
-            } 
-            else if (event.target.classList.contains("editar-valor")) {
-                let index = event.target.getAttribute("data-index");
+            const target = event.target;
+            const index = target.getAttribute("data-index");
 
-                let novoValor = event.target.value.replace(',', '.');
+            if (target.classList.contains("editar-quantidade")) {
+                // 1. Atualiza a quantidade
+                listaItens[index].quantidade = parseInt(target.value) || 1;
+                
+                // 2. Garante que o input não seja menor que 1 (conforme min="1")
+                if (listaItens[index].quantidade < 1) {
+                     listaItens[index].quantidade = 1;
+                     target.value = 1;
+                }
+
+                // 3. Atualiza apenas o subtotal e o total da linha (NÃO CHAMA atualizarTabela())
+                atualizarTotalLinha(target, listaItens[index]);
+                atualizarSubtotal();
+
+            } else if (target.classList.contains("editar-valor")) {
+                // 1. Limpa e converte o novo valor
+                let novoValor = target.value.replace(',', '.');
+                
+                // 2. Salva o valor no array
                 listaItens[index].valor = parseFloat(novoValor) || 0;
 
-                atualizarTabela();
+                // 3. Atualiza apenas o subtotal e o total da linha (NÃO CHAMA atualizarTabela())
+                atualizarTotalLinha(target, listaItens[index]);
+                atualizarSubtotal();
             }
         });
 
@@ -389,7 +419,8 @@
             if (event.target.classList.contains("remover-item")) {
                 let index = event.target.getAttribute("data-index");
                 listaItens.splice(index, 1);
-                atualizarTabela();
+                // Aqui podemos manter o atualizarTabela() pois a estrutura muda
+                atualizarTabela(); 
             }
         });
 
