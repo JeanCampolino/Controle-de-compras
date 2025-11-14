@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Carrinho</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(to right, #ccc, #87CEEB); }
-        .container { margin-top: 50px; }
+        body {
+            background: linear-gradient(to right, #ccc, #87CEEB);
+        }
+
+        .container {
+            margin-top: 50px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2 class="text-center"> Carrinho de compras </h2>
-        
+
         <div class="mb-3">
             <label for="produto" class="form-label">Produto</label>
             <input type="text" id="produto" class="form-control">
@@ -27,7 +34,16 @@
             <input type="text" id="preco" class="form-control" placeholder="Ex: 4,98">
         </div>
         <button class="btn btn-primary w-100" onclick="adicionarProduto()">Adicionar</button>
-        
+
+        <div class="card my-4 border-success" id="areaSugestoesIA" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title text-success"> Sugestões de Compra </h5>
+                <p class="card-text small text-muted">Com base em seus hábitos de compra anteriores:</p>
+                <div id="listaSugestoes" class="d-flex flex-wrap gap-2">
+                </div>
+            </div>
+        </div>
+
         <h3 class="mt-4">Itens:</h3>
         <table class="table">
             <thead>
@@ -43,44 +59,46 @@
         </table>
         <div id="paginacao" class="mt-3"></div>
         <h4 class="mt-3">Subtotal: R$ <span id="subtotal">0,00</span></h4>
+        <button class="btn btn-success w-100 mt-3" onclick="finalizarCompra()">Finalizar e Salvar Compra</button>
+
     </div>
 
     <script>
         let listaItens = [];
         const itensPorPagina = 10;
         let paginaAtual = 1;
-        
+
         function adicionarProduto() {
             let produto = document.getElementById("produto").value;
             let quantidade = parseInt(document.getElementById("quantidade").value);
             let preco = document.getElementById("preco").value.replace(",", ".");
-            
+
             if (!produto || isNaN(quantidade) || isNaN(parseFloat(preco))) {
                 alert("Por favor, preencha todos os campos corretamente.");
                 return;
             }
-            
+
             listaItens.push({
                 nome: produto,
                 quantidade: quantidade,
                 valor: parseFloat(preco)
             });
-            
+
             document.getElementById("produto").value = "";
             document.getElementById("quantidade").value = "";
             document.getElementById("preco").value = "";
-            
+
             atualizarTabela();
         }
-        
+
         function atualizarTabela() {
             let tabelaCorpo = document.getElementById("tabela-corpo");
             tabelaCorpo.innerHTML = "";
-            
+
             const inicio = (paginaAtual - 1) * itensPorPagina;
             const fim = inicio + itensPorPagina;
             const itensPaginados = listaItens.slice(inicio, fim);
-            
+
             itensPaginados.forEach((item, index) => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -92,16 +110,16 @@
                 `;
                 tabelaCorpo.appendChild(row);
             });
-            
+
             atualizarPaginacao();
             atualizarSubtotal();
         }
-        
+
         function atualizarPaginacao() {
             let paginacao = document.getElementById("paginacao");
             paginacao.innerHTML = "";
             let totalPaginas = Math.ceil(listaItens.length / itensPorPagina);
-            
+
             for (let i = 1; i <= totalPaginas; i++) {
                 const btn = document.createElement("button");
                 btn.className = `btn btn-sm ${i === paginaAtual ? "btn-primary" : "btn-secondary"}`;
@@ -113,12 +131,127 @@
                 paginacao.appendChild(btn);
             }
         }
-        
+
         function atualizarSubtotal() {
             let subtotal = listaItens.reduce((acc, item) => acc + item.valor * item.quantidade, 0);
             document.getElementById("subtotal").textContent = subtotal.toFixed(2);
         }
-        
+
+        // --- NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 1) ---
+
+        function finalizarCompra() {
+            if (listaItens.length === 0) {
+                alert("A lista está vazia!");
+                return;
+            }
+
+            // 1. Pega o histórico existente (ou inicializa)
+            let historico = JSON.parse(localStorage.getItem('historicoCompras')) || [];
+
+            // 2. Mapeia apenas os nomes dos produtos da lista atual
+            // Usamos o nome em minúsculo para garantir que "Arroz" e "arroz" sejam o mesmo
+            const listaAtual = listaItens.map(item => item.nome.toLowerCase().trim());
+
+            // 3. Adiciona a lista atual ao histórico
+            historico.push(listaAtual);
+
+            // 4. Salva o histórico
+            localStorage.setItem('historicoCompras', JSON.stringify(historico));
+
+            // 5. Limpa a lista atual e atualiza (como se a compra tivesse sido feita)
+            listaItens = [];
+            paginaAtual = 1;
+            atualizarTabela();
+
+            alert("Compra finalizada e histórico salvo para futura análise de IA!");
+            renderizarSugestoes(); // Chame a sugestão imediatamente para o próximo ciclo de compra
+        }
+
+        // --- FIM NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 1) ---
+
+        // --- NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 2) ---
+
+        function sugerirItensFrequentes() {
+            const historico = JSON.parse(localStorage.getItem('historicoCompras'));
+
+            // Condição para ter histórico suficiente
+            if (!historico || historico.length < 2) return [];
+
+            const contagemItens = {};
+            const itensNaListaAtual = listaItens.map(item => item.nome.toLowerCase().trim());
+
+            // 1. Conta a frequência de todos os itens no histórico
+            historico.flat().forEach(item => {
+                const itemNormalizado = item.toLowerCase().trim();
+
+                // Ignora o item se ele já estiver na lista atual
+                if (!itensNaListaAtual.includes(itemNormalizado)) {
+                    contagemItens[itemNormalizado] = (contagemItens[itemNormalizado] || 0) + 1;
+                }
+            });
+
+            // 2. Ordena por frequência (do maior para o menor)
+            const itensOrdenados = Object.entries(contagemItens)
+                .sort(([, a], [, b]) => b - a);
+
+            // 3. Retorna os 3 itens mais frequentes (o resultado da nossa IA)
+            return itensOrdenados
+                .filter(([_, frequencia]) => frequencia > 1) // Sugere apenas se comprado mais de uma vez
+                .slice(0, 3)
+                .map(([item]) => item.charAt(0).toUpperCase() + item.slice(1));
+        }
+
+        // --- FIM NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 2) ---
+
+        // --- NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 3) ---
+
+        function renderizarSugestoes() {
+            const sugestoes = sugerirItensFrequentes(); // Roda o algoritmo de IA
+            const listaSugestoes = document.getElementById('listaSugestoes');
+            const areaSugestoesIA = document.getElementById('areaSugestoesIA');
+
+            // Oculta a área se não houver sugestões
+            if (sugestoes.length === 0) {
+                areaSugestoesIA.style.display = 'none';
+                return;
+            }
+
+            // Exibe a área e limpa as sugestões antigas
+            areaSugestoesIA.style.display = 'block';
+            listaSugestoes.innerHTML = '';
+
+            sugestoes.forEach(itemNome => {
+                const botao = document.createElement('button');
+                botao.className = 'btn btn-outline-success btn-sm';
+                botao.innerText = `+ ${itemNome}`;
+
+                // Ao clicar, adiciona o item automaticamente
+                botao.onclick = () => {
+                    // Adiciona o item sugerido com quantidade 1 e preço 0.00
+                    listaItens.push({
+                        nome: itemNome,
+                        quantidade: 1,
+                        valor: 0.00 // O usuário pode editar o preço depois se for necessário
+                    });
+                    atualizarTabela();
+                    renderizarSugestoes(); // Atualiza as sugestões para remover o item que acabou de ser adicionado
+                };
+
+                listaSugestoes.appendChild(botao);
+            });
+        }
+
+        // 4. CHAME A FUNÇÃO DE RENDERIZAÇÃO NA INICIALIZAÇÃO
+        window.onload = function() {
+    atualizarTabela();      // Para garantir que a tabela seja montada (se houver itens salvos)
+    renderizarSugestoes();  // <--- ESTA LINHA CHAMA A IA AO CARREGAR A PÁGINA
+};
+        // Você também pode adicionar `renderizarSugestoes()` ao final de `atualizarTabela()` se quiser que as sugestões sejam atualizadas ao vivo.
+
+        // --- FIM NOVO CÓDIGO DE IMPLEMENTAÇÃO DA IA (PASSO 3) ---
+
+
+
         document.addEventListener("input", (event) => {
             if (event.target.classList.contains("editar-quantidade")) {
                 let index = event.target.getAttribute("data-index");
@@ -126,7 +259,7 @@
                 atualizarTabela();
             }
         });
-        
+
         document.addEventListener("click", (event) => {
             if (event.target.classList.contains("remover-item")) {
                 let index = event.target.getAttribute("data-index");
@@ -136,4 +269,5 @@
         });
     </script>
 </body>
+
 </html>
